@@ -10,7 +10,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
 
 
 # revision identifiers, used by Alembic.
@@ -31,18 +30,33 @@ def upgrade() -> None:
         sa.Column("email", sa.String()),
         sa.Column("phone", sa.String()),
         sa.Column("is_active", sa.Boolean(), nullable=False, default=True),
-        sa.Column("created_at", sa.DateTime(), nullable=False, default=sa.func.now()),
+        sa.Column(
+            "created_at", sa.DateTime(), nullable=False, default=sa.func.now()
+        ),
         sa.PrimaryKeyConstraint("id"),
+        if_not_exists=True,
     )
 
     # 创建索引, 加快查询
-    op.create_index(op.f("ix_user_username"), "user", ["username"], unique=True)
-    op.create_index(op.f("ix_user_phone"), "user", ["phone"], unique=True)
+    op.create_index(
+        op.f("ix_user_username"),
+        "user",
+        ["username"],
+        unique=True,
+        if_not_exists=True,
+    )
+    op.create_index(
+        op.f("ix_user_phone"),
+        "user",
+        ["phone"],
+        unique=True,
+        if_not_exists=True,
+    )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_index(op.f("ix_user_phone"), table_name="user")
-    op.drop_index(op.f("ix_user_username"), table_name="user")
+    op.drop_index(op.f("ix_user_phone"), table_name="user", if_exists=True)
+    op.drop_index(op.f("ix_user_username"), table_name="user", if_exists=True)
 
-    op.drop_table("user")
+    op.drop_table("user", if_exists=True)
