@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
 )
-from typing import Optional
+from typing import Any as Any, Generator, Optional
 from dotenv import load_dotenv
 from os import getenv
 
@@ -30,7 +30,10 @@ class SessionMaker:
         new_cls.engine = engine
         return new_cls
 
-    async def yield_session(self):
-        session = AsyncSession(self.engine)
+
+maker = SessionMaker()
+
+
+async def get_session():
+    async with AsyncSession(maker.engine) as session:
         yield session
-        await session.close()

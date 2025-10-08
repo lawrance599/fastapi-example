@@ -29,10 +29,10 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str
     password: str
-    email: Optional[str]
-    phone: Optional[str]
+    email: Optional[str] = None
+    phone: Optional[str] = None
     is_active: bool = True
-    create_time: datetime
+    created_at:datetime = Field(default_factory=datetime.now)
 
 
 # 创建用户权限表
