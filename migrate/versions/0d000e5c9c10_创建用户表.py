@@ -30,9 +30,7 @@ def upgrade() -> None:
         sa.Column("email", sa.String()),
         sa.Column("phone", sa.String()),
         sa.Column("is_active", sa.Boolean(), nullable=False, default=True),
-        sa.Column(
-            "created_at", sa.DateTime(),nullable=False, default=sa.func.now()
-        ),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )

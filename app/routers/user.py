@@ -3,7 +3,8 @@ from sqlmodel import select
 from app.database import User, get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
-
+from datetime import datetime, timezone
+from hashlib import sha256
 router = APIRouter(
     prefix="/users",
     tags=["users"],
@@ -13,7 +14,8 @@ router = APIRouter(
 
 @router.get("/{id}")
 async def read_user(
-    id: int = Path(..., title="用户ID"), session: AsyncSession=Depends(get_session)
+    id: int = Path(..., title="用户ID"),
+    session: AsyncSession = Depends(get_session),
 ):
     # 查询用户的语句
     statement = select(User).where(User.id == id)
@@ -23,19 +25,27 @@ async def read_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+
 @router.post("/add")
 async def create_user(
     username: str = Form(...),
     password: str = Form(...),
-    session: AsyncSession=Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     # 创建用户的语句
-    user = User(username=username, password=password, created_at=None)
+    hashed_password = sha256(password.encode()).hexdigest()
+    user = User(
+        username=username,
+        password=hashed_password,
+        created_at=datetime.now(timezone.utc).replace(tzinfo=None),
+    )
     try:
         session.add(user)
         await session.commit()
         await session.refresh(user)
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
         await session.rollback()
+        print(e)
         raise HTTPException(status_code=500, detail="Failed to create user")
+
     return user

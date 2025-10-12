@@ -32,7 +32,7 @@ class User(SQLModel, table=True):
     email: Optional[str] = None
     phone: Optional[str] = None
     is_active: bool = True
-    created_at:datetime = Field(default_factory=datetime.now)
+    created_at: datetime
 
 
 # 创建用户权限表
