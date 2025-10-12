@@ -3,6 +3,8 @@ from typing import Optional
 from datetime import datetime
 
 """
+本文件创建了数据库表的orm数据实体, 用来对数据库进行增删改查操作
+
 数据库表定义示例, 每个类对应一个数据库表
 
 class <数据库表名>(SQLModel, table=True):
@@ -21,15 +23,17 @@ class <数据库表名>(SQLModel, table=True):
     若字段类型为datetime, 请使用datetime
 """
 
+
 # 创建用户表
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str
     password: str
-    email: Optional[str]
-    phone: Optional[str]
+    email: Optional[str] = None
+    phone: Optional[str] = None
     is_active: bool = True
-    create_time: datetime
+    created_at: datetime
+
 
 # 创建用户权限表
 class UserPermission(SQLModel, table=True):

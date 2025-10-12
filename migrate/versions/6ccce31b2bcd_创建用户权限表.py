@@ -10,7 +10,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-import sqlmodel
 
 
 # revision identifiers, used by Alembic.
@@ -27,14 +26,23 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), nullable=False, primary_key=True),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("permission", sa.Integer(), nullable=False),
+        if_not_exists=True,
     )
     op.create_index(
-        op.f("ix_user_permission_user_id"), "user_permission", ["user_id"], unique=False
+        op.f("ix_user_permission_user_id"),
+        "user_permission",
+        ["user_id"],
+        unique=False,
+        if_not_exists=True,
     )
 
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_index(op.f("ix_user_permission_user_id"), table_name="user_permission")
+    op.drop_index(
+        op.f("ix_user_permission_user_id"),
+        table_name="user_permission",
+        if_exists=True,
+    )
 
-    op.drop_table("user_permission")
+    op.drop_table("user_permission", if_exists=True)
