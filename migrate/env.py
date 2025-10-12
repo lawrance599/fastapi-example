@@ -15,7 +15,7 @@ config = context.config
 load_dotenv()
 url = getenv("MIGRATE_URL")
 if url is None:
-    raise Exception("MIGRATE_URL 未设置")
+    raise Exception("MIGRATE_URL is not set")
 config.set_main_option("sqlalchemy.url", url)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
