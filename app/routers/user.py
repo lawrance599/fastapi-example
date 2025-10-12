@@ -32,20 +32,23 @@ async def create_user(
     password: str = Form(...),
     session: AsyncSession = Depends(get_session),
 ):
-    # 创建用户的语句
+    # 不存储用户密码明文
     hashed_password = sha256(password.encode()).hexdigest()
+    # 新用户实例
     user = User(
         username=username,
         password=hashed_password,
         created_at=datetime.now(timezone.utc).replace(tzinfo=None),
     )
     try:
+        # 添加用户
         session.add(user)
         await session.commit()
         await session.refresh(user)
     except SQLAlchemyError as e:
+        # 发生错误时回滚事务
+        # TODO: 增加错误处理粒度, 对于某些错误, 可以返回更详细的错误信息与错误码
         await session.rollback()
         print(e)
         raise HTTPException(status_code=500, detail="Failed to create user")
-
     return user
