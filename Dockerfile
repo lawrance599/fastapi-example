@@ -7,6 +7,7 @@ WORKDIR /app
 # 安装系统依赖
 RUN apt-get update && apt-get install -y \
     gcc \
+    postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
 # 复制配置文件
@@ -24,11 +25,12 @@ ENV DATABASE_URL="postgresql+asyncpg://yixin:yixin@localhost:5432/yixin" \
     MIGRATE_URL="postgresql+psycopg://yixin:yixin@localhost:5432/yixin"
 
 # 创建非root用户
-RUN adduser --disabled-password --gecos '' appuser && chown -R appuser:appuser /app
+RUN adduser --disabled-password --gecos '' appuser && \
+    chown -R appuser:appuser /app && \
+    chmod +x entrypoint.sh
 USER appuser
-
 # 暴露端口
 EXPOSE 8000
 
 # 启动命令
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["./entrypoint.sh"]
