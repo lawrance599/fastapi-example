@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Path, HTTPException, Form
 from sqlmodel import select
 from app.database import User, get_session
@@ -79,13 +80,14 @@ def verify_password(password: str, hashed_password: str) -> bool:
         return False
 
 
-@router.get("/{id}")
+@router.get("/{name}")
 async def read_user(
-    id: int = Path(..., title="用户ID"),
+    name: str = Path(..., title="用户名"),
     session: AsyncSession = Depends(get_session),
 ):
+    name = validate_username(name)
     # 查询用户的语句
-    statement = select(User).where(User.id == id)
+    statement = select(User).where(User.username == name)
     # 使用execute方法执行查询语句
     user = (await session.execute(statement)).scalar_one_or_none()
     if user is None:
@@ -97,6 +99,8 @@ async def read_user(
 async def create_user(
     username: str = Form(..., max_length=20),
     password: str = Form(..., min_length=8, max_length=100),
+    email: Optional[str] = Form(None),
+    phone: Optional[str] = Form(None),
     session: AsyncSession = Depends(get_session),
 ):
     # 验证用户名格式
@@ -109,6 +113,8 @@ async def create_user(
     user = User(
         username=username,
         password=hashed_password,
+        email=email,
+        phone=phone,
         created_at=datetime.now(timezone.utc).replace(tzinfo=None),
     )
     try:

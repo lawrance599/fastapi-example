@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: yixin
+      POSTGRES_PASSWORD: yixin
+      POSTGRES_DB: fastapi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://yixin:yixin@db:5432/fastapi
+      - MIGRATE_URL=postgresql+psycopg://yixin:yixin@db:5432/fastapi
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
