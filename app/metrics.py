@@ -14,4 +14,5 @@ requests_latency = Histogram(
     "app_requests_latency",
     "Request latency (ms)",
     ["method", "endpoint"],
+    buckets=[50, 100, 200, 300, 400, 500, 750, 1000],
 )
