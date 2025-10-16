@@ -24,7 +24,9 @@ class SessionMaker:
         load_dotenv()
         url = getenv("DATABASE_URL")
         if url is None:
-            raise ValueError("Environment variable DATABASE_URL is not set")
+            raise ValueError(
+                "Environment variable DATABASE_URL is not set"
+            )
         engine = create_async_engine(url)
         new_cls = super().__new__(cls)
         new_cls.engine = engine

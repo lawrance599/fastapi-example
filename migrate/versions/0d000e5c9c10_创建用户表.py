@@ -29,8 +29,17 @@ def upgrade() -> None:
         sa.Column("password", sa.String(), nullable=False),
         sa.Column("email", sa.String()),
         sa.Column("phone", sa.String()),
-        sa.Column("is_active", sa.Boolean(), nullable=False, default=True),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
+        sa.Column(
+            "is_active",
+            sa.Boolean(),
+            nullable=False,
+            default=True,
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
         sa.PrimaryKeyConstraint("id"),
         if_not_exists=True,
     )
@@ -54,7 +63,13 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_index(op.f("ix_user_phone"), table_name="user", if_exists=True)
-    op.drop_index(op.f("ix_user_username"), table_name="user", if_exists=True)
+    op.drop_index(
+        op.f("ix_user_phone"), table_name="user", if_exists=True
+    )
+    op.drop_index(
+        op.f("ix_user_username"),
+        table_name="user",
+        if_exists=True,
+    )
 
     op.drop_table("user", if_exists=True)

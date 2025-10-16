@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: yixin
+      POSTGRES_PASSWORD: yixin
+      POSTGRES_DB: fastapi
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # 使用随机映射端口
+    ports:
+      - "8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://yixin:yixin@db:5432/fastapi
+      - MIGRATE_URL=postgresql+psycopg://yixin:yixin@db:5432/fastapi
+    depends_on:
+      - db
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090" # 添加随机端口映射以访问 Prometheus UI
+    depends_on:
+      - app
+
+volumes:
+  postgres_data:

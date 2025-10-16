@@ -23,7 +23,9 @@ def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
         "user_permission",
-        sa.Column("id", sa.Integer(), nullable=False, primary_key=True),
+        sa.Column(
+            "id", sa.Integer(), nullable=False, primary_key=True
+        ),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.Column("permission", sa.Integer(), nullable=False),
         if_not_exists=True,
